@@ -21,17 +21,21 @@ namespace Game_Of_Life.Scripts
             Plain
         }
 
-        public enum CellType
+        public enum Role
         {
-        
+            Blue,
+            Red,
+            Green,
+            None
         }
         
         
         
         [SerializeField] private int gridHeight;
-
-        public static GameStates StateOfTheGame = GameStates.Menu;
+        public static Role CurrentInputUserRole;
+        public static Enviornment CurrentInputEnviornment;
         
+        public static GameStates StateOfTheGame = GameStates.Menu;
         public static GameStates CurrentGameState
         {
             get => StateOfTheGame;
@@ -45,12 +49,23 @@ namespace Game_Of_Life.Scripts
         private void Start()
         {
             StartCoroutine(nameof(PublishEvent));
+            CurrentInputUserRole = Role.Blue;
         }
 
         private IEnumerator PublishEvent()
         {
             yield return new WaitForSeconds(0.2f);
             GameEvents.Current.StartUserInput(gridHeight);
+        }
+
+        public void SetColorOfInput(int role)
+        {
+            CurrentInputUserRole = (Role)role;
+        }
+
+        public void SetUserEnviornment(int enviornment)
+        {
+            CurrentInputEnviornment = (Enviornment) enviornment;
         }
     }
 }

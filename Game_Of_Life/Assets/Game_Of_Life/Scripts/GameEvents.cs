@@ -20,7 +20,13 @@ namespace Game_Of_Life.Scripts
         public Action<int> onStartUserInput;
         public Action<GameManager.GameStates> onChangeGameState;
         public Action onRefreshCellState;
-        
+        public Action<bool> onUserSetEnviornment;
+
+        public void UserSetEnviornment(bool isUserInputsEnviornment)
+        {
+            onUserSetEnviornment?.Invoke(isUserInputsEnviornment);
+        }
+
         public void StartUserInput(int gridHeight)
         {
             onStartUserInput?.Invoke(gridHeight);
