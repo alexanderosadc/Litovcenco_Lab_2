@@ -197,7 +197,8 @@ namespace Game_Of_Life.Scripts
                     {
                         foreach (Cell cell in cells)
                         {
-                            if (currentCell.GetEnviornment() != GameManager.Enviornment.Water && cell.GetEnviornment() == GameManager.Enviornment.Water)
+                            if (currentCell.GetEnviornment() != GameManager.Enviornment.Water && 
+                                cell.GetEnviornment() != GameManager.Enviornment.Water)
                             {
                                 currentCell.SetEnviornment(GameManager.Enviornment.Forest);
                                 break;
