@@ -9,11 +9,8 @@ namespace Game_Of_Life.Scripts
         private bool _isUserInputsEnviornment;
         private bool _isCellLivesNextStep;
         private bool _isCurrentlyActive;
-        //GREEEN CELL
-        private bool _isAliveLonger;
-        private int _howManyTurnsIsAlive;
-        
-        
+
+
         private GameManager.Enviornment _enviornment;
         private SpriteRenderer _renderer;
         private GameManager.Role _role;
@@ -23,8 +20,6 @@ namespace Game_Of_Life.Scripts
 
         private void Awake()
         {
-            _howManyTurnsIsAlive = 0;
-            _isAliveLonger = false;
             _isUserInputsEnviornment = false;
             _renderer = GetComponent<SpriteRenderer>();
         }
@@ -44,20 +39,17 @@ namespace Game_Of_Life.Scripts
 
         private void DetectIfCellIsActive()
         {
-            if (!_isAliveLonger)
+            if (_isCellLivesNextStep)
             {
-                if (_isCellLivesNextStep)
-                {
-                    _isCurrentlyActive = true;
-                    _isCellLivesNextStep = false;
-                    activeCell.SetActive(true);
-                }
-                else
-                {
-                    _isCurrentlyActive = false;
-                    _isCellLivesNextStep = false;
-                    activeCell.SetActive(false);
-                }
+                _isCurrentlyActive = true;
+                _isCellLivesNextStep = false;
+                activeCell.SetActive(true);
+            }
+            else
+            {
+                _isCurrentlyActive = false;
+                _isCellLivesNextStep = false; 
+                activeCell.SetActive(false);
             }
         }
 
@@ -89,7 +81,6 @@ namespace Game_Of_Life.Scripts
                     break;
                 case GameManager.Role.Green:
                     color = Color.green;
-                    _isAliveLonger = true;
                     break;
             }
 
@@ -98,21 +89,9 @@ namespace Game_Of_Life.Scripts
 
         public void SetNextStepCellState(bool isLive, GameManager.Role nextRole)
         {
-            if (!_isAliveLonger)
-            {
-                _isCellLivesNextStep = isLive;
-                _role = nextRole;
-                Debug.Log("I am Alive");
-                SelectColor();
-            }
-            else
-            {
-                _howManyTurnsIsAlive++;
-                if (_howManyTurnsIsAlive > 2)
-                {
-                    _isAliveLonger = false;
-                }
-            }
+            _isCellLivesNextStep = isLive;
+            _role = nextRole;
+            SelectColor();
         }
 
         public bool GetIfCurrentlyActive()
@@ -134,11 +113,6 @@ namespace Game_Of_Life.Scripts
         public GameManager.Role GetRole()
         {
             return _role;
-        }
-
-        public bool GetIfIsAliveLonger()
-        {
-            return _isAliveLonger;
         }
     }
 }

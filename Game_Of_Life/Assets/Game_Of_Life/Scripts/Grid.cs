@@ -107,10 +107,8 @@ namespace Game_Of_Life.Scripts
             GameEvents.Current.onRefreshCellState();
         }
 
-        private void SetNextCells(int livingNeighbours, GameManager.Role roleInNextStage, int i, int j, List<Cell> cells)
+        private bool IfCellDeadFromEnviornment(Cell currentCell, GameManager.Role roleInNextStage ,List<Cell> cells)
         {
-            Cell currentCell = _grid[i, j].GetComponent<Cell>();
-            bool isCellDead = false;
             if (currentCell.GetEnviornment() == GameManager.Enviornment.Water)
             {
                 switch (roleInNextStage)
@@ -118,28 +116,68 @@ namespace Game_Of_Life.Scripts
                     case GameManager.Role.Blue:
                         break;
                     case GameManager.Role.Red:
-                        isCellDead = true;
+                        return true;
                         break;
                     case GameManager.Role.Green:
-                        /*isCellDead = true;
                         foreach (Cell cell in cells)
                         {
                             if (cell.GetRole() == GameManager.Role.Green &&
                                 cell.GetEnviornment() == GameManager.Enviornment.Desert)
                             {
-                                isCellDead = false;
+                                return false;
                                 break;
                             }
-                        }*/
-                        Debug.Log(isCellDead);
+                        }
+                        return true;
                         break;
                 }
             }
+            else if (currentCell.GetEnviornment() == GameManager.Enviornment.Desert)
+            {
+                switch (roleInNextStage)
+                {
+                    case GameManager.Role.Blue:
+                        return true;
+                        break;
+                    case GameManager.Role.Red:
+                        break;
+                    case GameManager.Role.Green:
+                        break;
+                    case GameManager.Role.None:
+                        break;
+                }
+            }
+            else if (currentCell.GetEnviornment() == GameManager.Enviornment.Forest)
+            {
+                switch (roleInNextStage)
+                {
+                    case GameManager.Role.Blue:
+                        return true;
+                        break;
+                    case GameManager.Role.Red:
+                        currentCell.SetEnviornment(GameManager.Enviornment.Desert);
+                        break;
+                    case GameManager.Role.Green:
+                        break;
+                    case GameManager.Role.None:
+                        break;
+                }
+            }
+
+            return false;
+        }
+
+        private void SetNextCells(int livingNeighbours, GameManager.Role roleInNextStage, int i, int j, List<Cell> cells)
+        {
+            Cell currentCell = _grid[i, j].GetComponent<Cell>();
+            bool isCellDead = IfCellDeadFromEnviornment(currentCell, roleInNextStage, cells);
+            
 
             if (!isCellDead)
             {
                 if (livingNeighbours == 3)
                 {
+                    bool isCellStaysLonger = false;
                     if (roleInNextStage == GameManager.Role.Red)
                     {
                         foreach (Cell cell in cells)
@@ -151,10 +189,22 @@ namespace Game_Of_Life.Scripts
                             }
                         }
                     }
-
-                    if (roleInNextStage == GameManager.Role.Blue)
+                    else if (roleInNextStage == GameManager.Role.Blue)
                     {
                         ActivateRandomBlueCells(1);
+                    }
+                    else if (roleInNextStage == GameManager.Role.Green)
+                    {
+                        foreach (Cell cell in cells)
+                        {
+                            if (currentCell.GetEnviornment() != GameManager.Enviornment.Water && cell.GetEnviornment() == GameManager.Enviornment.Water)
+                            {
+                                currentCell.SetEnviornment(GameManager.Enviornment.Forest);
+                                break;
+                            }
+                        }
+
+                        
                     }
                     currentCell.GetComponent<Cell>().SetNextStepCellState(true, roleInNextStage);
                 }
@@ -178,7 +228,7 @@ namespace Game_Of_Life.Scripts
             int result = 0;
             foreach (Cell cell in cells)
             {
-                if (cell.GetRole() == role && !cell.GetIfIsAliveLonger())
+                if (cell.GetRole() == role)
                     result++;
             }
 
